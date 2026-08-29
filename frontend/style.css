@@ -1,0 +1,353 @@
+:root {
+  --bg: #0b0e14;
+  --panel: #131720;
+  --panel-alt: #171c26;
+  --border: #232838;
+  --text: #e4e7ec;
+  --muted: #7c8698;
+  --accent: #4fd1c5;
+  --accent-dim: #2f7f78;
+  --amber: #f5a623;
+  --green: #34d399;
+  --red: #f87171;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  padding-bottom: 60px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(79,209,197,0.04), transparent);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 3px;
+}
+
+.brand-mark {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.health-strip {
+  display: flex;
+  gap: 8px;
+}
+
+.health-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: background 0.3s;
+}
+
+.health-dot.up { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.health-dot.down { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+.session {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-alt);
+}
+
+.panel-index {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent-dim);
+  letter-spacing: 1px;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  flex: 1;
+}
+
+.panel-body {
+  padding: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 13px;
+  flex: 1;
+  min-width: 110px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+button {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 9px 16px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #06120f;
+}
+.btn-primary:hover { background: #6ee0d5; }
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--muted);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+button.small {
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+.add-product-row {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.product-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-card .p-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.product-card .p-category {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.product-card .p-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 4px;
+}
+
+.product-card .p-price {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.product-card .p-stock {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.product-card .p-order-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.product-card .p-order-row input {
+  width: 50px;
+  flex: none;
+  text-align: center;
+  padding: 6px;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--mono);
+}
+
+/* Order pipeline */
+.order-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: var(--bg);
+}
+
+.order-card:last-child { margin-bottom: 0; }
+
+.order-card .order-id {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.order-card .order-items {
+  font-size: 13px;
+  margin: 4px 0 12px;
+  color: var(--text);
+}
+
+.pipeline {
+  display: flex;
+  align-items: center;
+}
+
+.pipeline .stage {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.pipeline .stage.active {
+  color: var(--amber);
+  border-color: var(--amber);
+  animation: pulse 1.4s infinite;
+}
+
+.pipeline .stage.done {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.pipeline .stage.failed {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.pipeline .connector {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  min-width: 16px;
+}
+
+.pipeline .connector.done { background: var(--green); }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245,166,35,0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(245,166,35,0); }
+}
+
+/* Terminal log */
+.terminal {
+  background: #05070a;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+  max-height: 220px;
+  overflow-y: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #8fe3d8;
+  line-height: 1.6;
+}
+
+.terminal .line { display: block; }
+.terminal .line .ts { color: var(--muted); margin-right: 8px; }
+.terminal .line.err { color: var(--red); }
+
+.cursor {
+  animation: blink 1s step-start infinite;
+  color: var(--accent);
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  main { padding: 0 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipeline .stage.active { animation: none; }
+  .cursor { animation: none; }
+}

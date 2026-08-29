@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mercury — Distributed Commerce Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-mark">◆</span>
+    <span class="brand-name">MERCURY</span>
+  </div>
+  <div class="health-strip" id="healthStrip">
+    <span class="health-dot" data-svc="user" title="User Service"></span>
+    <span class="health-dot" data-svc="product" title="Product Service"></span>
+    <span class="health-dot" data-svc="inventory" title="Inventory Service"></span>
+    <span class="health-dot" data-svc="order" title="Order Service"></span>
+  </div>
+  <div class="session" id="authStatus">not authenticated</div>
+</header>
+
+<main>
+
+  <section class="panel" id="authPanel">
+    <div class="panel-head">
+      <span class="panel-index">01</span>
+      <h2>Account</h2>
+    </div>
+    <div class="panel-body row">
+      <input id="email" type="email" placeholder="email">
+      <input id="password" type="password" placeholder="password">
+      <button class="btn-ghost" id="registerBtn">Register</button>
+      <button class="btn-primary" id="loginBtn">Login</button>
+    </div>
+  </section>
+
+  <section class="panel" id="productPanel">
+    <div class="panel-head">
+      <span class="panel-index">02</span>
+      <h2>Catalog</h2>
+    </div>
+    <div class="panel-body">
+      <div class="row add-product-row">
+        <input id="newProductName" placeholder="product name">
+        <input id="newProductPrice" type="number" placeholder="price">
+        <input id="newProductCategory" placeholder="category">
+        <input id="newProductStock" type="number" placeholder="stock">
+        <button class="btn-primary" id="addProductBtn">+ Add</button>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="orderPanel">
+    <div class="panel-head">
+      <span class="panel-index">03</span>
+      <h2>Order Pipeline</h2>
+      <button class="btn-ghost small" id="refreshOrdersBtn">refresh</button>
+    </div>
+    <div class="panel-body" id="orderList">
+      <p class="empty-state">No orders placed yet. Add a product to the catalog, then order it.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="logPanel">
+    <div class="panel-head">
+      <span class="panel-index">04</span>
+      <h2>Event Log</h2>
+    </div>
+    <div class="panel-body">
+      <div class="terminal" id="log"><span class="cursor">▍</span></div>
+    </div>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
