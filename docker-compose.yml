@@ -2,15 +2,15 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: mercury
-      POSTGRES_PASSWORD: mercury
-      POSTGRES_DB: mercury
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mercury"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -28,8 +28,8 @@ services:
   user-service:
     build: ./user-service
     environment:
-      DATABASE_URL: postgresql://mercury:mercury@postgres:5432/mercury
-      JWT_SECRET: dev-secret-change-me
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8001:8000"
     depends_on:
@@ -39,7 +39,7 @@ services:
   product-service:
     build: ./product-service
     environment:
-      DATABASE_URL: postgresql://mercury:mercury@postgres:5432/mercury
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379/0
     ports:
       - "8002:8000"
@@ -75,7 +75,7 @@ services:
   inventory-service:
     build: ./inventory-service
     environment:
-      DATABASE_URL: postgresql://mercury:mercury@postgres:5432/mercury
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     ports:
       - "8003:8000"
     depends_on:
@@ -85,7 +85,7 @@ services:
   order-service:
     build: ./order-service
     environment:
-      DATABASE_URL: postgresql://mercury:mercury@postgres:5432/mercury
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       INVENTORY_SERVICE_URL: http://inventory-service:8000
     ports:
@@ -101,8 +101,9 @@ services:
   payment-service:
     build: ./payment-service
     environment:
-      DATABASE_URL: postgresql://mercury:mercury@postgres:5432/mercury
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      FAILURE_RATE: ${PAYMENT_FAILURE_RATE}
     depends_on:
       postgres:
         condition: service_healthy
