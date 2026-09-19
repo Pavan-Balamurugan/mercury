@@ -8,6 +8,7 @@ from app.inventory_client import InsufficientStockError, reserve_items
 from app.kafka_producer import publish_order_created
 from app.models import Order, OrderItem, OrderStatus
 from app.schemas import OrderCreate, OrderOut
+from app.sentinel_logger import log_event
 
 router = APIRouter()
 
@@ -22,6 +23,10 @@ async def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
         db.add(OrderItem(order_id=order.id, product_id=item.product_id, quantity=item.quantity))
     db.commit()
     db.refresh(order)
+    log_event(
+        "INFO", "ORDER_CREATED", f"Order {order.id} created",
+        user_id=str(order.user_id), metadata={"order_id": str(order.id)},
+    )
 
     try:
         reserve_items([{"product_id": i.product_id, "quantity": i.quantity} for i in payload.items])
@@ -29,6 +34,10 @@ async def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
         order.status = OrderStatus.FAILED
         db.commit()
         db.refresh(order)
+        log_event(
+            "ERROR", "ORDER_FAILURE", f"Order {order.id} failed — inventory conflict",
+            user_id=str(order.user_id), metadata={"order_id": str(order.id)},
+        )
         return order
 
     order.status = OrderStatus.PAYMENT_PENDING
@@ -36,6 +45,10 @@ async def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
     db.refresh(order)
 
     await publish_order_created(str(order.id), str(order.user_id))
+    log_event(
+        "INFO", "ORDER_PAYMENT_PENDING", f"Order {order.id} reserved, awaiting payment",
+        user_id=str(order.user_id), metadata={"order_id": str(order.id)},
+    )
 
     return order
 

@@ -9,6 +9,7 @@ from app.config import settings
 from app.db import get_db
 from app.models import Product
 from app.schemas import ProductCreate, ProductOut
+from app.sentinel_logger import log_event
 
 router = APIRouter()
 
@@ -23,6 +24,7 @@ def create_product(payload: ProductCreate, db: Session = Depends(get_db)):
     db.add(product)
     db.commit()
     db.refresh(product)
+    log_event("INFO", "PRODUCT_CREATED", f"Product created: {product.name}", metadata={"product_id": str(product.id)})
     return product
 
 
@@ -41,6 +43,7 @@ def get_product(product_id: uuid.UUID, db: Session = Depends(get_db)):
     key = _cache_key(str(product_id))
     cached = redis_client.get(key)
     if cached:
+        log_event("INFO", "CACHE_HIT", f"Product cache hit: {product_id}", metadata={"product_id": str(product_id)})
         return json.loads(cached)
 
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -49,6 +52,7 @@ def get_product(product_id: uuid.UUID, db: Session = Depends(get_db)):
 
     out = ProductOut.model_validate(product)
     redis_client.setex(key, settings.cache_ttl_seconds, out.model_dump_json())
+    log_event("INFO", "CACHE_MISS", f"Product cache miss: {product_id}", metadata={"product_id": str(product_id)})
     return out
 
 
@@ -64,6 +68,7 @@ def update_product(product_id: uuid.UUID, payload: ProductCreate, db: Session = 
     db.refresh(product)
 
     redis_client.delete(_cache_key(str(product_id)))
+    log_event("INFO", "PRODUCT_UPDATED", f"Product updated: {product.name}", metadata={"product_id": str(product_id)})
     return product
 
 
@@ -76,3 +81,4 @@ def delete_product(product_id: uuid.UUID, db: Session = Depends(get_db)):
     db.delete(product)
     db.commit()
     redis_client.delete(_cache_key(str(product_id)))
+    log_event("INFO", "PRODUCT_DELETED", f"Product deleted: {product_id}", metadata={"product_id": str(product_id)})

@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import Base, engine
 from app.routes import router
+from app.sentinel_logger import init_logger
+
+init_logger("user-service")
 
 Base.metadata.create_all(bind=engine)
 

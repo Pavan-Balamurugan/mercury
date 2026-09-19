@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mercury — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div id="nav-root" style="display:flex;align-items:center;justify-content:space-between;width:100%"></div>
+</header>
+
+<main class="centered-main">
+  <div class="panel auth-card" style="margin-top:0">
+    <div class="panel-body">
+      <h1>MERCURY</h1>
+      <div class="subtitle">Sign in or create an account</div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="••••••••">
+      </div>
+
+      <div class="auth-actions">
+        <button class="btn-primary" id="loginBtn">Login</button>
+        <button class="btn-ghost" id="registerBtn">Create account</button>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+  </div>
+</main>
+
+<script src="shared.js"></script>
+<script src="login.js"></script>
+</body>
+</html>

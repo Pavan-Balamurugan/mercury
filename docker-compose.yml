@@ -112,3 +112,8 @@ services:
 
 volumes:
   pgdata:
+
+networks:
+  default: 
+    name: 09ce1839c4cc04eb0581232090d245d1b5c9516fbc9e1f07483c4188cc4e7851
+    external: true

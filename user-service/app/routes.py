@@ -6,6 +6,7 @@ from app.auth import create_access_token, decode_access_token, hash_password, ve
 from app.db import get_db
 from app.models import User
 from app.schemas import Token, UserCreate, UserLogin, UserOut
+from app.sentinel_logger import log_event
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -15,12 +16,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 def register(payload: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
+        log_event("WARN", "REGISTER_FAILED", f"Duplicate email registration attempt: {payload.email}")
         raise HTTPException(status_code=400, detail="Email already registered")
 
     user = User(email=payload.email, password_hash=hash_password(payload.password))
     db.add(user)
     db.commit()
     db.refresh(user)
+    log_event("INFO", "USER_REGISTERED", f"New user registered: {payload.email}", user_id=str(user.id))
     return user
 
 
@@ -28,9 +31,11 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
 def login(payload: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.password_hash):
+        log_event("WARN", "LOGIN_FAILED", f"Failed login attempt for {payload.email}")
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_access_token(str(user.id), user.role)
+    log_event("INFO", "LOGIN_SUCCESS", f"User logged in: {payload.email}", user_id=str(user.id))
     return Token(access_token=token)
 
 
@@ -39,6 +44,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         payload = decode_access_token(token)
         user_id = payload.get("sub")
     except Exception:
+        log_event("WARN", "AUTH_TOKEN_INVALID", "Invalid or expired token presented")
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
     user = db.query(User).filter(User.id == user_id).first()

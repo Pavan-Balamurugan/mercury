@@ -1,4 +1,3 @@
-import asyncio
 import json
 
 from aiokafka import AIOKafkaConsumer
@@ -7,6 +6,7 @@ from app.config import settings
 from app.db import SessionLocal
 from app.inventory_client import release_items
 from app.models import Order, OrderItem, OrderStatus
+from app.sentinel_logger import log_event
 
 
 async def consume_payment_events() -> None:
@@ -40,10 +40,18 @@ async def _handle_payment_event(event: dict) -> None:
         if event_type == "PaymentCompleted":
             order.status = OrderStatus.CONFIRMED
             db.commit()
+            log_event(
+                "INFO", "ORDER_CONFIRMED", f"Order {order_id} confirmed",
+                user_id=str(order.user_id), metadata={"order_id": str(order_id)},
+            )
         else:
             order.status = OrderStatus.PAYMENT_FAILED
             db.commit()
             items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
             release_items([{"product_id": i.product_id, "quantity": i.quantity} for i in items])
+            log_event(
+                "ERROR", "PAYMENT_FAILED", f"Order {order_id} payment failed, stock released",
+                user_id=str(order.user_id), metadata={"order_id": str(order_id)},
+            )
     finally:
         db.close()

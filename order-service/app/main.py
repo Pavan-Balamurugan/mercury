@@ -8,6 +8,9 @@ from app.db import Base, engine
 from app.kafka_consumer import consume_payment_events
 from app.kafka_producer import start_producer, stop_producer
 from app.routes import router
+from app.sentinel_logger import init_logger
+
+init_logger("order-service")
 
 Base.metadata.create_all(bind=engine)
 

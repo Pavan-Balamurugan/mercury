@@ -6,6 +6,9 @@ from fastapi import FastAPI
 from app.db import Base, engine
 from app.kafka_consumer import consume_order_events
 from app.kafka_producer import start_producer, stop_producer
+from app.sentinel_logger import init_logger
+
+init_logger("payment-service")
 
 Base.metadata.create_all(bind=engine)
 

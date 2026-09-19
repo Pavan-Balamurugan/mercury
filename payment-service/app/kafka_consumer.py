@@ -7,6 +7,7 @@ from app.config import settings
 from app.db import SessionLocal
 from app.kafka_producer import publish_payment_result
 from app.models import Payment, PaymentStatus
+from app.sentinel_logger import log_event
 
 
 async def consume_order_events() -> None:
@@ -30,6 +31,7 @@ async def _handle_order_event(event: dict) -> None:
         return
 
     order_id = event.get("orderId")
+    user_id = event.get("userId")
     if not order_id:
         return
 
@@ -45,6 +47,14 @@ async def _handle_order_event(event: dict) -> None:
         payment = Payment(order_id=order_id, status=status)
         db.add(payment)
         db.commit()
+
+        log_event(
+            "INFO" if success else "ERROR",
+            "PAYMENT_COMPLETED" if success else "PAYMENT_DECLINED",
+            f"Payment {'succeeded' if success else 'declined'} for order {order_id}",
+            user_id=user_id,
+            metadata={"order_id": order_id},
+        )
     finally:
         db.close()
 

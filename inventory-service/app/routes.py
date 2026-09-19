@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import Inventory
 from app.schemas import InventoryOut, ReleaseRequest, ReserveRequest, StockSet
+from app.sentinel_logger import log_event
 
 router = APIRouter()
 
@@ -43,12 +44,24 @@ def reserve_stock(payload: ReserveRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No inventory record for product")
 
     if inv.available_qty < payload.quantity:
+        log_event(
+            "ERROR",
+            "INVENTORY_CONFLICT",
+            f"Insufficient stock for product {payload.product_id}: requested {payload.quantity}, available {inv.available_qty}",
+            metadata={"product_id": str(payload.product_id), "requested": payload.quantity, "available": inv.available_qty},
+        )
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Insufficient stock")
 
     inv.available_qty -= payload.quantity
     inv.reserved_qty += payload.quantity
     db.commit()
     db.refresh(inv)
+    log_event(
+        "INFO",
+        "INVENTORY_RESERVED",
+        f"Reserved {payload.quantity} units of {payload.product_id}",
+        metadata={"product_id": str(payload.product_id), "quantity": payload.quantity},
+    )
     return inv
 
 
@@ -68,4 +81,10 @@ def release_stock(payload: ReleaseRequest, db: Session = Depends(get_db)):
     inv.available_qty += release_qty
     db.commit()
     db.refresh(inv)
+    log_event(
+        "INFO",
+        "INVENTORY_RELEASED",
+        f"Released {release_qty} units of {payload.product_id}",
+        metadata={"product_id": str(payload.product_id), "quantity": release_qty},
+    )
     return inv
